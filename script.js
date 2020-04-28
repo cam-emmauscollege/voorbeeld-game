@@ -26,6 +26,7 @@ const SPEELVELDBREEDTE = 1280;
 const SPEELVELDHOOGTE = 720;
 const SPEELVELDRANDBREEDTE = 20;
 const SPELERDIAMETER = 50;
+const VIJANDDIAMETER = 40;
 
 var spelerX = 200; // x-positie van speler
 var spelerY = 100; // y-positie van speler
@@ -35,8 +36,10 @@ var spelerYSnelheid = 6;
 var kogelX = 0;    // x-positie van kogel
 var kogelY = 0;    // y-positie van kogel
 
-var vijandX = 0;   // x-positie van vijand
-var vijandY = 0;   // y-positie van vijand
+var vijandX = 100;          // x-positie van vijand
+var vijandY = 500;          // y-positie van vijand
+var vijandXSnelheid = 3;    // horizontale snelheid van vijand
+var vijandYSnelheid = -2;  // verticale snelheid van vijand
 
 var score = 0; // aantal behaalde punten
 
@@ -65,8 +68,8 @@ var tekenVeld = function () {
  * @param {number} y y-coördinaat
  */
 var tekenVijand = function(x, y) {
-    
-
+    fill(255, 0, 0);
+    ellipse(x, y, VIJANDDIAMETER, VIJANDDIAMETER);
 };
 
 
@@ -96,16 +99,16 @@ var tekenSpeler = function(x, y) {
  * Updatet globale variabelen met positie van vijand of tegenspeler
  */
 var beweegVijand = function() {
-    if (spelerY >= SPEELVELDHOOGTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER  || spelerY <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
-        spelerYSnelheid = spelerYSnelheid * -1;
+    if (vijandY >= SPEELVELDHOOGTE - SPEELVELDRANDBREEDTE - 0.5*VIJANDDIAMETER  || vijandY <= SPEELVELDRANDBREEDTE + 0.5*VIJANDDIAMETER) {
+        vijandYSnelheid = vijandYSnelheid * -1;
     }
 
-    if (spelerX >= SPEELVELDBREEDTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER || spelerX <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
-        spelerXSnelheid = spelerXSnelheid * -1;
+    if (vijandX >= SPEELVELDBREEDTE - SPEELVELDRANDBREEDTE - 0.5*VIJANDDIAMETER || vijandX <= SPEELVELDRANDBREEDTE + 0.5*VIJANDDIAMETER) {
+        vijandXSnelheid = vijandXSnelheid * -1;
     }
 
-    spelerX = spelerX + spelerXSnelheid;
-    spelerY = spelerY + spelerYSnelheid;
+    vijandX = vijandX + vijandXSnelheid;
+    vijandY = vijandY + vijandYSnelheid;
 };
 
 
@@ -122,7 +125,16 @@ var beweegKogel = function() {
  * Updatet globale variabele spelerX en spelerY
  */
 var beweegSpeler = function() {
+    if (spelerY >= SPEELVELDHOOGTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER  || spelerY <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
+        spelerYSnelheid = spelerYSnelheid * -1;
+    }
 
+    if (spelerX >= SPEELVELDBREEDTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER || spelerX <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
+        spelerXSnelheid = spelerXSnelheid * -1;
+    }
+
+    spelerX = spelerX + spelerXSnelheid;
+    spelerY = spelerY + spelerYSnelheid;
 };
 
 
