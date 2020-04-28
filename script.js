@@ -22,8 +22,15 @@ const SPELEN = 1;
 const GAMEOVER = 2;
 var spelStatus = SPELEN;
 
+const SPEELVELDBREEDTE = 1280;
+const SPEELVELDHOOGTE = 720;
+const SPEELVELDRANDBREEDTE = 20;
+const SPELERDIAMETER = 50;
+
 var spelerX = 200; // x-positie van speler
 var spelerY = 100; // y-positie van speler
+var spelerXSnelheid = 8;
+var spelerYSnelheid = 6;
 
 var kogelX = 0;    // x-positie van kogel
 var kogelY = 0;    // y-positie van kogel
@@ -46,8 +53,9 @@ var score = 0; // aantal behaalde punten
  * Tekent het speelveld
  */
 var tekenVeld = function () {
-  fill(0, 0, 0);
-  rect(20, 20, width - 2 * 20, height - 2 * 20);
+    background('blue');
+    fill(0, 0, 0);
+    rect(20, 20, width - 2 * 20, height - 2 * 20);
 };
 
 
@@ -88,7 +96,16 @@ var tekenSpeler = function(x, y) {
  * Updatet globale variabelen met positie van vijand of tegenspeler
  */
 var beweegVijand = function() {
-    
+    if (spelerY >= SPEELVELDHOOGTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER  || spelerY <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
+        spelerYSnelheid = spelerYSnelheid * -1;
+    }
+
+    if (spelerX >= SPEELVELDBREEDTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER || spelerX <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
+        spelerXSnelheid = spelerXSnelheid * -1;
+    }
+
+    spelerX = spelerX + spelerXSnelheid;
+    spelerY = spelerY + spelerYSnelheid;
 };
 
 
@@ -147,10 +164,7 @@ var checkGameOver = function() {
  */
 function setup() {
   // Maak een canvas (rechthoek) waarin je je speelveld kunt tekenen
-  createCanvas(1280, 720);
-
-  // Kleur de achtergrond blauw, zodat je het kunt zien
-  background('blue');
+  createCanvas(SPEELVELDBREEDTE, SPEELVELDHOOGTE);
 }
 
 
