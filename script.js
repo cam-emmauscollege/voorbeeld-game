@@ -25,7 +25,7 @@ var spelStatus = SPELEN;
 const SPEELVELDBREEDTE = 1280;
 const SPEELVELDHOOGTE = 720;
 const SPEELVELDRANDBREEDTE = 20;
-const SPELERDIAMETER = 50;
+const SPELERDIAMETER = 80;
 const VIJANDDIAMETER = 40;
 
 var spelerX = 200; // x-positie van speler
@@ -40,10 +40,14 @@ var vijandX = 100;          // x-positie van vijand
 var vijandY = 500;          // y-positie van vijand
 var vijandXSnelheid = 3;    // horizontale snelheid van vijand
 var vijandYSnelheid = -2;  // verticale snelheid van vijand
+var vijandImage;
 
 var score = 0; // aantal behaalde punten
 
 
+function preload() {
+    vijandImage = loadImage('plaatjes/space-invader.png');
+}
 
 
 
@@ -68,8 +72,9 @@ var tekenVeld = function () {
  * @param {number} y y-coördinaat
  */
 var tekenVijand = function(x, y) {
-    fill(255, 255, 0);
+    fill(255, 0, 0);
     ellipse(x, y, VIJANDDIAMETER, VIJANDDIAMETER);
+    //image(vijandImage, x, y);
 };
 
 
@@ -90,8 +95,9 @@ var tekenKogel = function(x, y) {
  * @param {number} y y-coördinaat
  */
 var tekenSpeler = function(x, y) {
-  fill("white");
-  ellipse(x, y, 50, 50);
+  fill("green");
+  ellipse(x, y, SPELERDIAMETER, SPELERDIAMETER);
+  rect(x, y, 1000, 10);
 };
 
 
@@ -125,6 +131,23 @@ var beweegKogel = function() {
  * Updatet globale variabele spelerX en spelerY
  */
 var beweegSpeler = function() {
+    if (keyIsPressed === true) {
+       if (keyCode === RIGHT_ARROW) {
+           spelerX = spelerX + 2;
+        }
+        else if (keyCode === LEFT_ARROW) {
+            if (spelerX > SPELERDIAMETER / 2) {
+                spelerX = spelerX - 2;
+            }
+            
+        }
+    }
+
+
+
+
+
+    /*
     if (spelerY >= SPEELVELDHOOGTE - SPEELVELDRANDBREEDTE - 0.5*SPELERDIAMETER  || spelerY <= SPEELVELDRANDBREEDTE + 0.5*SPELERDIAMETER) {
         spelerYSnelheid = spelerYSnelheid * -1;
     }
@@ -134,7 +157,8 @@ var beweegSpeler = function() {
     }
 
     spelerX = spelerX + spelerXSnelheid;
-    spelerY = spelerY + spelerYSnelheid;
+    spelerY = spelerY + spelerYSnelheid;*/
+
 };
 
 
