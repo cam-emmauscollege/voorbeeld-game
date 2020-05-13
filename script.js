@@ -95,7 +95,7 @@ var tekenSpeler = function(x, y) {
 };
 
 
-/**
+/**white
  * Updatet globale variabelen met positie van vijand of tegenspeler
  */
 var beweegVijand = function() {
