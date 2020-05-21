@@ -22,6 +22,8 @@ const SPELEN = 1;
 const GAMEOVER = 2;
 var spelStatus = SPELEN;
 
+var plaatje;
+
 const SPEELVELDBREEDTE = 1280;
 const SPEELVELDHOOGTE = 720;
 const SPEELVELDRANDBREEDTE = 20;
@@ -33,12 +35,17 @@ var spelerY = 100; // y-positie van speler
 var spelerXSnelheid = 8;
 var spelerYSnelheid = 6;
 
-var kogelX = 0;    // x-positie van kogel
-var kogelY = 0;    // y-positie van kogel
+var isKogelZichtbaar = false;
+var kogelX = 30;    // x-positie van kogel
+var kogelY = 30;    // y-positie van kogel
 
-var vijandX = 100;          // x-positie van vijand
-var vijandY = 500;          // y-positie van vijand
-var vijandXSnelheid = 3;    // horizontale snelheid van vijand
+
+var vijandenX = [];
+var vijandenY = [];
+var vijandenSnelheid = [];
+//var vijandX = 100;          // x-positie van vijand
+//var vijandY = -50;          // y-positie van vijand
+//var vijandXSnelheid = 3;    // horizontale snelheid van vijand
 var vijandYSnelheid = -2;  // verticale snelheid van vijand
 var vijandImage;
 
@@ -62,18 +69,22 @@ function preload() {
 var tekenVeld = function () {
     background('blue');
     fill(0, 0, 0);
+    
+    //image(plaatje, 0, 0, SPEELVELDBREEDTE, SPEELVELDHOOGTE);
     rect(20, 20, width - 2 * 20, height - 2 * 20);
 };
 
 
 /**
- * Tekent de vijand
- * @param {number} x x-coördinaat
- * @param {number} y y-coördinaat
+ * Tekent de vijanden
  */
-var tekenVijand = function(x, y) {
-    fill(255, 255, 0);
-    ellipse(x, y, VIJANDDIAMETER, VIJANDDIAMETER);
+var tekenVijanden = function() {
+    for (var i = 0; i < vijandenX.length; i++) {
+        fill(255, 0, 0);
+        //ellipse(vijandenX[i], vijandenY[i], VIJANDDIAMETER, VIJANDDIAMETER);
+        rect(vijandenX[i], vijandenY[i], VIJANDDIAMETER, VIJANDDIAMETER);
+    }
+    
     //image(vijandImage, x, y);
 };
 
@@ -84,6 +95,10 @@ var tekenVijand = function(x, y) {
  * @param {number} y y-coördinaat
  */
 var tekenKogel = function(x, y) {
+    if (isKogelZichtbaar === true) {
+        fill(0, 255, 0);
+        rect(x, y, 10, 10);
+    }
 
 
 };
@@ -95,9 +110,14 @@ var tekenKogel = function(x, y) {
  * @param {number} y y-coördinaat
  */
 var tekenSpeler = function(x, y) {
-  fill("green");
+  noStroke();
+  fill(255, 255, 255);
+
+  //body van de tank
   ellipse(x, y, SPELERDIAMETER, SPELERDIAMETER);
-  rect(x, y, 1000, 10);
+
+  //loop van de tank
+  rect(x, y-5, 70, 10);
 };
 
 
@@ -105,6 +125,26 @@ var tekenSpeler = function(x, y) {
  * Updatet globale variabelen met positie van vijand of tegenspeler
  */
 var beweegVijand = function() {
+    for (var i = 0; i < vijandenX.length; i++) {
+        vijandenY[i] = vijandenY[i] + vijandenSnelheid[i];
+
+        if (vijandenY[i] > SPEELVELDHOOGTE + 20) {
+            vijandenY[i] = random(-250, -30);
+            vijandenX[i] = random(20, SPEELVELDBREEDTE - 20);
+            vijandenSnelheid[i] = random(2, 10);
+            
+            /*
+            console.log("nieuwe vijand positie voor nummer " + i);
+            console.log(vijandenX[i]);
+            console.log(vijandenY[i]);
+            console.log(vijandenSnelheid[i]);
+            */
+        }
+    }
+    
+    
+
+    /*
     if (vijandY >= SPEELVELDHOOGTE - SPEELVELDRANDBREEDTE - 0.5*VIJANDDIAMETER  || vijandY <= SPEELVELDRANDBREEDTE + 0.5*VIJANDDIAMETER) {
         vijandYSnelheid = vijandYSnelheid * -1;
     }
@@ -114,7 +154,7 @@ var beweegVijand = function() {
     }
 
     vijandX = vijandX + vijandXSnelheid;
-    vijandY = vijandY + vijandYSnelheid;
+    vijandY = vijandY + vijandYSnelheid;*/
 };
 
 
@@ -122,7 +162,17 @@ var beweegVijand = function() {
  * Updatet globale variabelen met positie van kogel of bal
  */
 var beweegKogel = function() {
+    if (keyIsPressed === true) {
+        if (key === " ") {
+            kogelX = spelerX + 70;
+            kogelY = spelerY;
+            isKogelZichtbaar = true;
+        }
+    }
 
+    if (isKogelZichtbaar === true) {
+        kogelX = kogelX + 5;
+    }
 };
 
 
@@ -167,6 +217,14 @@ var beweegSpeler = function() {
  * @returns {boolean} true als vijand is geraakt
  */
 var checkVijandGeraakt = function() {
+    for (var i = 0; i < vijandenX.length; i++) {
+        if (kogelX > vijandenX[i] && kogelX < vijandenX[i]+VIJANDDIAMETER &&
+            kogelY > vijandenY[i] && kogelY < vijandenY[i]+VIJANDDIAMETER) {
+                console.log("geraakt, vijand " + i);
+            }
+    }
+    
+
 
   return false;
 };
@@ -193,6 +251,12 @@ var checkGameOver = function() {
 };
 
 
+function preload() {
+    // @ts-ignore
+    plaatje = loadImage('plaatjes/space-invader.png');
+}
+
+
 /**
  * setup
  * de code in deze functie wordt één keer uitgevoerd door
@@ -201,6 +265,15 @@ var checkGameOver = function() {
 function setup() {
   // Maak een canvas (rechthoek) waarin je je speelveld kunt tekenen
   createCanvas(SPEELVELDBREEDTE, SPEELVELDHOOGTE);
+
+  for (var i = 0; i < 5; i++) {
+      vijandenX.push(random(20, SPEELVELDBREEDTE - 20));
+      vijandenY.push(random(-250, -30));
+      vijandenSnelheid.push(random(2, 10));
+  }
+
+  console.log(vijandenX);
+  console.log(vijandenSnelheid);
 }
 
 
@@ -227,7 +300,7 @@ function draw() {
       }
 
       tekenVeld();
-      tekenVijand(vijandX, vijandY);
+      tekenVijanden();
       tekenKogel(kogelX, kogelY);
       tekenSpeler(spelerX, spelerY);
 
