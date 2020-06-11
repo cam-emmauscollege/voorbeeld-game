@@ -22,6 +22,8 @@ const SPELEN = 1;
 const GAMEOVER = 2;
 
 var spelStatus = UITLEG;
+var score = 0;
+var aantalLevens = 3;
 
 var plaatje;
 var stopwatchSec = 0;
@@ -35,13 +37,13 @@ const SPELERDIAMETER = 80;
 const AANTALVIJANDEN = 10;
 const VIJANDDIAMETER = 40;
 var KOGELSNELHEID = 16;
-const KOGELDIAMETER = 10;
+var kogelDiameter = 10;
 
 var spelerX = 600; // x-positie van speler
 var spelerY = 650; // y-positie van speler
 var spelerXSnelheid = 8;
 var spelerYSnelheid = 6;
-var spelerPlaatje;
+
 
 
 var kogelsX = [];   // x-positie van kogel
@@ -57,7 +59,7 @@ var kogelY = 30;    // y-positie van kogel
 var vijandenX = [];
 var vijandenY = [];
 var vijandenSnelheid = [];
-// var vijandImage;
+var vijandPlaatje;
 
 /*
 OUD:
@@ -72,7 +74,7 @@ var score = 0; // aantal behaalde punten
 
 
 function preload() {
-    // spelerPlaatje = loadImage('plaatjes/space-invadr.png');
+     vijandPlaatje = loadImage('plaatjes/space-invader.png');
 }
 
 
@@ -100,7 +102,8 @@ var tekenVeld = function () {
 var tekenVijanden = function() {
     for (var i = 0; i < vijandenX.length; i++) {
         fill(255, 0, 0);
-        ellipse(vijandenX[i], vijandenY[i], VIJANDDIAMETER, VIJANDDIAMETER);
+        //ellipse(vijandenX[i], vijandenY[i], VIJANDDIAMETER, VIJANDDIAMETER);
+        image(vijandPlaatje, vijandenX[i], vijandenY[i]);
         //rect(vijandenX[i], vijandenY[i], VIJANDDIAMETER, VIJANDDIAMETER);
     }
     
@@ -124,7 +127,8 @@ var tekenKogels = function() {
     // wordt er ook niets getekend.
 
     for (var i = 0; i < kogelsX.length; i++) {
-        ellipse(kogelsX[i], kogelsY[i], KOGELDIAMETER, KOGELDIAMETER);
+        fill(255, 255, 255);
+        ellipse(kogelsX[i], kogelsY[i], kogelDiameter, kogelDiameter);
     }
 };
 
@@ -157,9 +161,14 @@ function tekenTimer() {
 
     var timerString = stopwatchMin + " : " + extraNul + stopwatchSec;
 
+    textSize(12);
     text(timerString , 50, 50, 50, 50);
 }
 
+function tekenScore() {
+    textSize(24);
+    text(""+score , width-100, 50, 150, 100);
+}
 
 /**
  * Updatet globale variabelen met positie van vijand of tegenspeler
@@ -188,7 +197,7 @@ var beweegKogel = function() {
         // (d.w.z. als de kogel meer dan de helft van z'n
         // diameter boven de bovenkant is),
         // dan coordinaten uit arrays halen
-        if (kogelsY[i] < 0 - KOGELDIAMETER / 2) {
+        if (kogelsY[i] < 0 - kogelDiameter / 2) {
             verwijderKogel(i);
 
             // omdat we een element uit de array hebben gehaald
@@ -232,7 +241,7 @@ var checkVijandGeraakt = function(vijandNummer) {
 
     // ga voor deze vijand iedere kogel langs
     for (var j = 0; j < kogelsX.length; j++) {
-        if (collideCircleCircle(kogelsX[j], kogelsY[j], KOGELDIAMETER,
+        if (collideCircleCircle(kogelsX[j], kogelsY[j], kogelDiameter,
                                 vijandenX[vijandNummer], vijandenY[vijandNummer], VIJANDDIAMETER)) {
             teruggeefWaarde = true;
             
@@ -271,8 +280,12 @@ var checkSpelerGeraakt = function() {
  * @returns {boolean} true als het spel is afgelopen
  */
 var checkGameOver = function() {
+  var teruggeefWaarde = false;
+  if (aantalLevens === 0) {
+      teruggeefWaarde = true;
+  }
     
-  return false;
+  return teruggeefWaarde;
 };
 
 function updateTimer() {
@@ -332,15 +345,68 @@ function setup() {
  * uitgevoerd door de p5 library, nadat de setup functie klaar is
  */
 function draw() {
+    // spelstatus is 1, 2 of 3
+
+    if (spelStatus === 1) {
+        // dit is het uitlegscherm
+        // teken hier alles wat daarvoor nodig is
+
+        // stel ik druk de spatiebalk in (in spelstatus 1), dan maak ik van spelstatus 2
+    }
+
+
+
+
+    else if (spelStatus === 2) {
+        // dit is de game, teken de game etc.
+    }
+
+    else if (spelStatus === 3) {
+        // hier teken ik het gameover scherm
+    }
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   switch (spelStatus) {
     case UITLEG:
+      var mijnVar = 0;
       background(0, 0, 255);
       fill(255, 255, 255);
-      text("Druk op de spatiebalk om te starten", 200, 200, 200, 50);
+      textSize(24);
+      text("Druk op de spatiebalk om te starten", 200, 200, 500, 50);
 
       if (keyIsPressed === true && key === " ") {
           console.log("pressed space");
           spelStatus = SPELEN;
+          aantalLevens = 3;
+          score = 0;
       }
     break;
     case SPELEN:
@@ -351,7 +417,15 @@ function draw() {
       // check voor iedere vijand of een kogel 'm raakt: 
       for (var i = 0; i < vijandenX.length; i++) {
         if (checkVijandGeraakt(i)) {
-            // punten erbij --> nog doen
+            // punten erbij
+            score++;
+
+            if (score % 10 === 0) {
+                kogelDiameter = 40;
+            }
+            else {
+                kogelDiameter = 10;
+            }
 
             // nieuwe vijand maken
             verwijderVijand(i);
@@ -360,6 +434,7 @@ function draw() {
       }
 
       if (checkSpelerGeraakt()) {
+        aantalLevens--;
         // leven eraf of gezondheid verlagen
         // eventueel: nieuwe speler maken
       }
@@ -371,10 +446,15 @@ function draw() {
       tekenKogels();
       tekenSpeler(spelerX, spelerY);
       tekenTimer();
+      tekenScore();
 
       if (checkGameOver()) {
         spelStatus = GAMEOVER;
       }
+      break;
+      case GAMEOVER:
+          // hier komt het GAMEOVER scherm
+
       break;
   }
 }
